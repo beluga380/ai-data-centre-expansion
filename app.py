@@ -50,71 +50,31 @@ def svg_img(name: str, alt: str, css: str = "") -> str:
 
 STYLE = """
 <style>
-@keyframes pulse { 0%,100% { box-shadow: 0 0 6px #5CF2FF, 0 0 18px rgba(92,242,255,.45); }
-                   50%     { box-shadow: 0 0 10px #FF5CD6, 0 0 26px rgba(255,92,214,.45); } }
-@keyframes bob   { 0%,100% { translate: 0 0; } 50% { translate: 0 -6px; } }
-@keyframes shimmer { to { background-position: 200% center; } }
+@keyframes bob { 0%,100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 
-/* ---------- Hero: neon night by default, day when the switch is on ---------- */
+/* ---------- Hero ---------- */
 .hero {
-  position: relative; overflow: hidden;
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   align-items: center; gap: 8px 24px; padding: 28px 32px 10px; border-radius: 24px;
-  background: radial-gradient(circle at 80% 10%, #3A2A6E 0%, transparent 45%),
-              linear-gradient(140deg, #140F2A 0%, #221A45 55%, #2E1F4F 100%);
-  border: 1px solid #4B3C88; color: #EDE7FF;
-  box-shadow: 0 0 0 1px rgba(92,242,255,.15), 0 14px 40px rgba(46,31,79,.35);
-  transition: background .6s ease, color .6s ease;
+  background: linear-gradient(135deg, #FFF1E2 0%, #FFE2C7 55%, #FCD3B5 100%);
+  border: 1px solid #F1D9C4; color: #2E2622; box-shadow: 0 10px 30px rgba(196,106,16,.12);
 }
 .hero .eyebrow { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase;
-  color: #5CF2FF; font-weight: 700; text-shadow: 0 0 8px rgba(92,242,255,.8); }
-.hero h1 {
-  font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1.06; margin: 8px 0 14px; padding: 0;
-  background: linear-gradient(90deg, #FFC46B, #FF7AD9, #5CF2FF, #FFC46B);
-  background-size: 200% auto; -webkit-background-clip: text; background-clip: text;
-  color: transparent; animation: shimmer 6s linear infinite;
-  filter: drop-shadow(0 0 10px rgba(255,122,217,.45));
-}
+  color: #9A5A1E; font-weight: 700; }
+.hero h1 { font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1.06; margin: 8px 0 14px;
+  padding: 0; color: #3A2A20; }
 .hero .q { font-size: clamp(1.1rem, 2vw, 1.35rem); font-weight: 600; line-height: 1.35;
-  color: #FFFFFF; background: rgba(20,15,42,.55); border: 1.5px solid #5CF2FF;
-  border-radius: 14px; padding: 12px 16px; margin: 0 0 14px; animation: pulse 4s ease-in-out infinite; }
-.hero .who { display: flex; gap: 12px; align-items: center; color: #D9D1F5; margin-bottom: 18px; }
-.hero .who b { color: #FFC46B; }
+  color: #2E2622; background: rgba(255,255,255,.7); border-left: 5px solid #C46A10;
+  border-radius: 14px; padding: 12px 16px; margin: 0 0 14px; }
+.hero .who { display: flex; gap: 12px; align-items: center; color: #4A3A30; margin-bottom: 18px; }
+.hero .who b { color: #2E2622; }
 .hero .avatar { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid;
-  place-items: center; font-weight: 800; color: #FF7AD9; background: #1A1433;
-  border: 2px solid #FF7AD9; box-shadow: 0 0 12px rgba(255,122,217,.7); }
+  place-items: center; font-weight: 800; color: #C46A10; background: #fff; border: 2px solid #C46A10; }
 .hero .art { perspective: 1000px; }
 .hero .art img { width: 100%; height: auto; display: block; animation: bob 6s ease-in-out infinite;
   transition: transform .5s cubic-bezier(.2,.8,.2,1), filter .5s ease; transform-origin: 50% 60%; }
 .hero .art:hover img { transform: rotateX(10deg) rotateY(-12deg) scale(1.05);
-  filter: drop-shadow(0 18px 24px rgba(92,242,255,.25)); }
-.hero .art .day { display: none; }
-
-.switch { position: absolute; top: 16px; right: 18px; z-index: 2; display: inline-flex;
-  align-items: center; gap: 8px; cursor: pointer; user-select: none; font-size: .85rem;
-  color: #D9D1F5; background: rgba(20,15,42,.6); border: 1px solid #4B3C88;
-  padding: 6px 12px; border-radius: 999px; }
-.switch .knob { width: 38px; height: 20px; border-radius: 999px; background: #3A2E66; position: relative;
-  box-shadow: inset 0 0 6px rgba(92,242,255,.6); transition: background .3s; }
-.switch .knob::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
-  border-radius: 50%; background: #5CF2FF; box-shadow: 0 0 8px #5CF2FF; transition: left .3s, background .3s; }
-#daynight { position: absolute; opacity: 0; pointer-events: none; }
-
-/* Day mode */
-.hero:has(#daynight:checked) { background: linear-gradient(135deg, #FFF1E2 0%, #FFE2C7 55%, #FCD3B5 100%);
-  border-color: #F1D9C4; color: #2E2622; box-shadow: 0 10px 30px rgba(196,106,16,.12); }
-.hero:has(#daynight:checked) .eyebrow { color: #9A5A1E; text-shadow: none; }
-.hero:has(#daynight:checked) h1 { background: none; color: #3A2A20; filter: none; animation: none; }
-.hero:has(#daynight:checked) .q { color: #2E2622; background: rgba(255,255,255,.7);
-  border: 0; border-left: 5px solid #C46A10; animation: none; }
-.hero:has(#daynight:checked) .who { color: #4A3A30; }
-.hero:has(#daynight:checked) .who b { color: #2E2622; }
-.hero:has(#daynight:checked) .avatar { color: #C46A10; background: #fff; border-color: #C46A10; box-shadow: none; }
-.hero:has(#daynight:checked) .art .day { display: block; }
-.hero:has(#daynight:checked) .art .night { display: none; }
-.hero:has(#daynight:checked) .switch { color: #6A4A30; background: rgba(255,255,255,.7); border-color: #F1D9C4; }
-.hero:has(#daynight:checked) .knob { background: #FCD3B5; box-shadow: inset 0 0 4px rgba(196,106,16,.4); }
-.hero:has(#daynight:checked) .knob::after { left: 20px; background: #FFB347; box-shadow: 0 0 8px #FFB347; }
+  filter: drop-shadow(0 18px 24px rgba(196,106,16,.25)); }
 
 /* ---------- Answer and tab tiles ---------- */
 .answer { margin-top: 18px; padding: 16px 20px; border-radius: 18px; background: #fff;
@@ -135,7 +95,7 @@ STYLE = """
   transition: opacity .25s ease; }
 .tile:hover .go { opacity: 1; }
 @media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; padding: 56px 18px 6px; }
+  .hero { grid-template-columns: 1fr; padding: 22px 18px 6px; }
   .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tile .go { opacity: 1; }
 }
@@ -155,8 +115,6 @@ def front_page() -> None:
     )
     st.html(STYLE + f"""
 <section class="hero">
-  <input type="checkbox" id="daynight">
-  <label class="switch" for="daynight">🌙 <span class="knob"></span> ☀️</label>
   <div>
     <div class="eyebrow">Data narrative · Energy and AI</div>
     <h1>AI Data Centre Expansion</h1>
@@ -166,10 +124,7 @@ def front_page() -> None:
       <span>Our app is for <b>{PERSONA_NAME}</b>, {PERSONA}</span>
     </div>
   </div>
-  <div class="art">
-    <span class="night">{svg_img("hero_night.svg", "Neon night illustration of a data-centre campus powered by the grid")}</span>
-    <span class="day">{svg_img("hero.svg", "Daytime illustration of a data-centre campus powered by the grid")}</span>
-  </div>
+  <div class="art">{svg_img("hero.svg", "Illustration of a data-centre campus powered by the grid")}</div>
 </section>
 <div class="answer"><b>🧭 The answer the data supports:</b> {ANSWER}</div>
 <div class="tiles">{tiles}</div>
