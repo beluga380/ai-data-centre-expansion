@@ -34,6 +34,10 @@ DEFAULT_REGIONS = [
 ]
 HIGHLIGHT = "#C46A10"  # warm amber: the one line Dana should read (matches the app theme)
 CONTEXT = "#A79E97"    # soft warm grey: comparison regions
+# Darker versions for text, so labels stay readable in a compressed screen recording
+# (both pass the 4.5:1 contrast guideline on the page background).
+HIGHLIGHT_TEXT = "#A85A0C"
+CONTEXT_TEXT = "#766D66"
 
 
 @st.cache_data
@@ -55,7 +59,7 @@ def load_data(path: Path = DATA_FILE) -> tuple[pd.DataFrame, str]:
 
 
 def segments(df: pd.DataFrame) -> pd.DataFrame:
-    """Split each region's line into segments between consecutive measured years.
+    """Split each region's line into segments between consecutive years with data.
 
     A segment is marked as a gap when it jumps over years with no data
     (2020 to 2023), so the chart can draw it dashed instead of solid.
@@ -99,7 +103,7 @@ def build_chart(df: pd.DataFrame) -> alt.LayerChart:
     width = alt.Size("role:N", scale=alt.Scale(domain=["focus", "context"], range=[4, 2]),
                      legend=None)
 
-    # Hover anywhere on the chart: the nearest measured year is selected.
+    # Hover anywhere on the chart: the nearest year with data is selected.
     hover = alt.selection_point(nearest=True, on="pointerover", fields=["year"], empty=False)
 
     base_seg = alt.Chart(seg).encode(x=x, y=y, color=color, size=width, detail="seg:N")
@@ -136,13 +140,15 @@ def build_chart(df: pd.DataFrame) -> alt.LayerChart:
 
     last = df[df["year"] == df["year"].max()]
     end_labels = (
-        alt.Chart(last).mark_text(align="left", dx=12, fontSize=13, fontWeight="bold")
-        .encode(x=x, y=y, color=color, text="endlabel:N")
+        alt.Chart(last).mark_text(align="left", dx=12, fontSize=14, fontWeight="bold")
+        .encode(x=x, y=y, text="endlabel:N",
+                color=alt.condition("datum.role == 'focus'",
+                                    alt.value(HIGHLIGHT_TEXT), alt.value(CONTEXT_TEXT)))
         .transform_calculate(endlabel="datum.region + ' ' + format(datum.share, '.1f') + '%'")
     )
 
     gap_note = alt.Chart(pd.DataFrame({"year": [2021.5], "txt": ["no data 2021–22"]})).mark_text(
-        fontSize=12, fontStyle="italic", color=CONTEXT, dy=-8,
+        fontSize=13, fontStyle="italic", color=CONTEXT_TEXT, dy=-8,
     ).encode(x="year:Q", y=alt.value(12), text="txt:N")
 
     return (
@@ -186,7 +192,7 @@ def render() -> None:
     year = st.segmented_control(
         "Show the summary cards for", years[1:], default=latest, key="tab3_year",
     ) or latest
-    prev = years[years.index(year) - 1]  # previous *measured* year (2023's is 2020)
+    prev = years[years.index(year) - 1]  # previous year with data (2023's is 2020)
 
     us_now, us_prev, us_first = val(FOCUS, year), val(FOCUS, prev), val(FOCUS, first)
     world_now = val("World", year)
@@ -212,7 +218,7 @@ def render() -> None:
         st.altair_chart(build_chart(df[df["region"].isin(chosen)]), width="stretch")
         st.caption(
             "Hover over the chart to see every region's value for that year. "
-            "Dots are measured years. Dashed segments cross 2021 and 2022, where the source "
+            "Dots mark the years the source has values for. Dashed segments cross 2021 and 2022, where the source "
             "has no values, so the line does not invent numbers for those years."
         )
 
