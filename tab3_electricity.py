@@ -251,6 +251,22 @@ def render() -> None:
             f"`{diff:.4f}` → **{diff:+.1f} points**."
         )
 
+        # The other two cards, from the same file.
+        def cell(region: str, yr_: int) -> str:
+            return raw[(raw[ent] == region) & (raw[yr] == str(yr_))][value_col].iloc[0]
+
+        first_value, world_value = cell(FOCUS, first), cell("World", year)
+        st.markdown(
+            f"6. Second card uses the United States {first} row (`{first_value}`): "
+            f"`{raw_value}` − `{first_value}` = **{float(raw_value) - float(first_value):+.1f} points**, "
+            f"and `{raw_value}` ÷ `{first_value}` = **{float(raw_value) / float(first_value):.1f}×**."
+        )
+        st.markdown(
+            f"7. Third card uses the World {year} row (`{world_value}`): "
+            f"`{raw_value}` ÷ `{world_value}` = **{float(raw_value) / float(world_value):.1f}× higher**, "
+            f"and the world value rounds to **{float(world_value):.1f}%**."
+        )
+
     with st.expander("📋 All data used in this tab"):
         wide = df.pivot(index="region", columns="year", values="share").round(2)
         st.dataframe(wide, width="stretch")
